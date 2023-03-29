@@ -1,13 +1,15 @@
 import {React, useState} from "react";
 import { styles } from './style';
-import { View, TextInput, TouchableOpacity, Text, Keyboard, Pressable, Alert, ScrollView, KeyboardAvoidingView } from "react-native";
+import { View, TextInput, TouchableOpacity, Text, Dimensions, Keyboard, Pressable, Alert, ScrollView, KeyboardAvoidingView } from "react-native";
 import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
 
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 export default function Cadastro({navigation}) {
 
     return (
-        <View style={styles.MainContainer}>
+        <KeyboardAvoidingView  style={styles.MainContainer}>
             
              <View style={styles.containerHeader}>
                 <Text style={styles.title}>Criar Conta</Text>
@@ -22,6 +24,10 @@ export default function Cadastro({navigation}) {
                 <TextInput style={styles.input} placeholder="Faculdade" />
                 <TextInput style={styles.input} placeholder="Curso" />
                 <TextInput style={styles.input} placeholder="Período" />
+            </View>
+
+            <View style={{width: '60%'}} >
+                <TextInput style={{borderWidth: 1, borderRadius: 5, padding: 10, textAlign: 'center', borderColor: 'gray',}}  placeholder="Fazer Upload" />
             </View>
 
             <TouchableOpacity style={styles.button}>
@@ -54,6 +60,6 @@ export default function Cadastro({navigation}) {
                     />
                 </View>
             </View>
-        </View>
+        </KeyboardAvoidingView >
     );
 }

@@ -1,4 +1,6 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+
+const windowHeight = Dimensions.get('window').height;
 
 export const style = StyleSheet.create({
     container:{
@@ -7,10 +9,13 @@ export const style = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 20,
+        paddingTop: windowHeight * 0.05,
+        // paddingBottom: windowHeight * 0.01,
+
     },
     containerHeader:{
         position: 'relative',
-        bottom: 75    
+        bottom: windowHeight * 0.115,    
     },
     title:{
         fontSize: 25,
@@ -62,7 +67,7 @@ export const style = StyleSheet.create({
     },
     containerCadastro:{
         position: 'relative',
-        top: 35
+        top: windowHeight * 0.025,
     },
     textCadastro:{
         fontSize: 15,
@@ -70,8 +75,9 @@ export const style = StyleSheet.create({
     },
     containerTipoCadastro:{
         position: 'relative',
-        top: 100,
-        marginBottom: 40
+        top: windowHeight * 0.115,
+        marginBottom: windowHeight * 0.12,
+        // marginTop: windowHeight * 0.05,
     },
     textTipoCadastro:{
         color: '#2c88d9',
@@ -80,7 +86,7 @@ export const style = StyleSheet.create({
     icons:{
         position: 'absolute',
         flexDirection: 'row',
-        top: 45,
+        top: 40,
         right: -20
     }
 })
