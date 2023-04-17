@@ -3,12 +3,13 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 
 import StackRoutes from './src/main/mainstack';
-
+import Routes from './routes';
 
 export default function App() {
   return (
     <NavigationContainer style={styles.container}>
      <StackRoutes />
+     {/* <Routes /> */}
     </NavigationContainer>
   );
 }

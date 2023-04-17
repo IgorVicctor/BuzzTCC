@@ -1,12 +1,22 @@
 import {React, useState} from "react";
 import { styles } from './style';
 import { View, TextInput, TouchableOpacity, Text, Dimensions, Keyboard, Pressable, Alert, ScrollView, KeyboardAvoidingView } from "react-native";
-import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
+import { AntDesign, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
+import * as DocumentPicker from 'expo-document-picker';
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+// const windowWidth = Dimensions.get('window').width;
+// const windowHeight = Dimensions.get('window').height;
 
 export default function Cadastro({navigation}) {
+
+    const [fileUri, setFileUri] = useState('');
+
+    const pickDocument = async () => {
+        const result = await DocumentPicker.getDocumentAsync();
+        if (!result.cancelled) {
+        setFileUri(result.uri);
+        }
+    };
 
     return (
         <KeyboardAvoidingView  style={styles.MainContainer}>
@@ -15,19 +25,33 @@ export default function Cadastro({navigation}) {
                 <Text style={styles.title}>Criar Conta</Text>
                 <Text style={styles.subtitle}>Crie uma conta para aproveitar{'\n'}nossos serviços</Text>
             </View>
-
+            
             <View style={styles.containerInput}>
-                <TextInput style={styles.input} placeholder="Nome" />
-                <TextInput style={styles.input} placeholder="E-mail" />
-                <TextInput style={styles.input} placeholder="Senha" secureTextEntry={true} />
-                <TextInput style={styles.input} placeholder="Confirmar Senha" secureTextEntry={true} />
-                <TextInput style={styles.input} placeholder="Faculdade" />
-                <TextInput style={styles.input} placeholder="Curso" />
-                <TextInput style={styles.input} placeholder="Período" />
-            </View>
-
-            <View style={{width: '60%'}} >
-                <TextInput style={{borderWidth: 1, borderRadius: 5, padding: 10, textAlign: 'center', borderColor: 'gray',}}  placeholder="Fazer Upload" />
+                <ScrollView style={{height: '40%'}} overScrollMode="never" showsVerticalScrollIndicator={false}>
+                    <TextInput style={styles.input} placeholder="Nome" />
+                    <TextInput style={styles.input} placeholder="E-mail" />
+                    <TextInput style={styles.input} placeholder="Senha" secureTextEntry={true} />
+                    <TextInput style={styles.input} placeholder="Confirmar Senha" secureTextEntry={true} />
+                    <TextInput style={styles.input} placeholder="Faculdade" />
+                    <TextInput style={styles.input} placeholder="Curso" />
+                    <TextInput style={styles.input} placeholder="Período" />
+                    <TouchableOpacity style={styles.uploadButton} onPress={pickDocument}>
+                {fileUri ? (
+                    <Text style={styles.fileName}>{fileUri}</Text>
+                ) : (
+                    <View style={styles.buttonTextUpload}>
+                        <Text style={{fontSize: 17, alignSelf: "center"}}>Selecionar arquivo</Text>
+                        <MaterialIcons 
+                            name="file-upload"
+                            size={28}
+                            color={'#000'}
+                            marginRight={15}
+                            
+                        />    
+                    </View>
+                )}
+            </TouchableOpacity>
+                </ScrollView>
             </View>
 
             <TouchableOpacity style={styles.button}>

@@ -42,7 +42,7 @@ export default function Login({ navigation }) {
                 <Text style={style.textLink}>Esquece sua senha?</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={style.button}>
+            <TouchableOpacity style={style.button} onPress={() => navigation.navigate("Home")}>
                 <Text style={style.buttonText}>Entrar</Text>
             </TouchableOpacity>
 

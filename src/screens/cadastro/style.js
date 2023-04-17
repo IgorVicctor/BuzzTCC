@@ -31,9 +31,11 @@ export const styles = StyleSheet.create({
     },
     containerInput:{
         width: '100%',
+        // backgroundColor: "black",
+        // height: '20%'
     },
     input: {
-        height: windowHeight * 0.05,
+        height: windowHeight * 0.055,
         width: '100%',
         borderColor: 'gray',
         borderWidth: 1,
@@ -49,7 +51,6 @@ export const styles = StyleSheet.create({
         borderRadius: 5,
         marginBottom: 30,
         // marginTop: windowHeight * 0.1,
-
     },
     buttonText:{
         color: '#fff',
@@ -78,5 +79,28 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         top: 45,
         right: -20,
-    }
+    },
+    uploadButton: {
+        padding: 10,
+        borderRadius: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: windowHeight * 0.09,
+
+      },
+      buttonTextUpload: {
+        color: '#000',
+        fontSize: 25,
+        borderColor: 'gray',
+        borderWidth: 1,
+        borderRadius: 5,
+        borderStyle: 'dashed',
+        padding: 10,
+        flexDirection: "row-reverse",
+
+      },
+      fileName: {
+        color: '#fff',
+        fontSize: 16,
+      },
 })
