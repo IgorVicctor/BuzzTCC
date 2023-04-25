@@ -1,17 +1,18 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import Home from './src/screens/home';
+import Home from '../screens/home';
 
 const Tab = createBottomTabNavigator();
 
 import { AntDesign, FontAwesome5, MaterialIcons, Entypo, MaterialCommunityIcons, Feather, Ionicons } from "@expo/vector-icons";
-import Leitor from './src/screens/leitor';
-import Perfil from './src/screens/perfil';
-import Configuracao from './src/screens/configuracao';
+import Leitor from '../screens/aluno/leitor';
+import Perfil from '../screens/aluno/perfil';
+import Configuracao from '../screens/configuracao';
+import Rota from '../screens/aluno/rota';
 
 
-export default function Routes(){
+export default function RoutesAluno(){
     return(
         <Tab.Navigator
             initialRouteName='Home '
@@ -22,7 +23,6 @@ export default function Routes(){
                     // paddingBottom: 5,
                     paddingTop: 15
                 },
-              
                 tabBarActiveTintColor: '#000',
             }}
         >
@@ -31,10 +31,11 @@ export default function Routes(){
             name="Home "
             component={Home}
             options={{
-            tabBarLabel: '',
-            tabBarIcon: ({color, size}) => (
-                <Ionicons name="home-outline" color={color} size={size} />
-            ),
+                tabBarLabel: '',
+                tabBarIcon: ({color, size}) => (
+                    // <Feather name="user" color={color} size={size} />
+                    <Ionicons name="home-outline" color={color} size={size} />
+                ),
             }}
         />
 
@@ -48,6 +49,17 @@ export default function Routes(){
             ),
             }}
         />
+
+        <Tab.Screen
+            name="Rota "
+            component={Rota}
+            options={{
+            tabBarLabel: '',
+            tabBarIcon: ({color, size}) => (
+                <Feather name="map" color={color} size={size} />
+            ),
+            }}
+        />  
 
         <Tab.Screen
             name="Perfil "

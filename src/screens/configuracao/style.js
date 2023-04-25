@@ -1,11 +1,17 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+
+const windowHeight = Dimensions.get('window').height;
 
 export const styles = StyleSheet.create({
-    container: {
+    container:{
         flex: 1,
-        backgroundColor: "#fff",
-        justifyContent: "center",
-        alignItems: "center"
+        backgroundColor: '#fff',        
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%'
+        // paddingHorizontal: 20,
+        // paddingTop: windowHeight * 0.05,
+        // // paddingBottom: windowHeight * 0.01,
     },
     header:{
         height: "21%",
@@ -14,7 +20,39 @@ export const styles = StyleSheet.create({
         borderBottomLeftRadius: 20,
         position: "absolute",
         top: 0,
-        left: 0,
-        right: 0,
+        width: "100%", 
+        justifyContent: 'center',
+        
+    },
+    avatar: {
+        width: 60,
+        height: 60,
+        borderRadius: 63,
+        marginLeft: 30,
+    },
+    option: {
+        height: 60,
+        paddingLeft: 20,
+        borderBottomWidth: 0.5,
+        justifyContent: 'center',
+        paddingBottom: 5
+    },
+    optionText: {
+        fontSize: 17,
+        fontWeight: 'bold',
+    },
+    logoutButton: {
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
+        height: 60,
+        borderTopWidth: 0.5,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    logoutButtonText: {
+        color: '#D23030',
+        fontSize: 18,
+        fontWeight: 'bold',
     },
 })

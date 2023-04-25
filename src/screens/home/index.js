@@ -1,8 +1,11 @@
 import {React, useState} from "react";
 import {styles} from './style';
-import { View, Text, Image, ScrollView } from "react-native";
+import { View, Text, Image, ScrollView,  } from "react-native";
+
 
 export default function Home({navigation}) {
+
+
     return (
         <View style={styles.container}>
         

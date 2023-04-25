@@ -36,21 +36,21 @@ export default function Cadastro({navigation}) {
                     <TextInput style={styles.input} placeholder="Curso" />
                     <TextInput style={styles.input} placeholder="Período" />
                     <TouchableOpacity style={styles.uploadButton} onPress={pickDocument}>
-                {fileUri ? (
-                    <Text style={styles.fileName}>{fileUri}</Text>
-                ) : (
-                    <View style={styles.buttonTextUpload}>
-                        <Text style={{fontSize: 17, alignSelf: "center"}}>Selecionar arquivo</Text>
-                        <MaterialIcons 
-                            name="file-upload"
-                            size={28}
-                            color={'#000'}
-                            marginRight={15}
-                            
-                        />    
-                    </View>
-                )}
-            </TouchableOpacity>
+                        {fileUri ? (
+                            <Text style={styles.fileName}>{fileUri}</Text>
+                        ) : (
+                            <View style={styles.buttonTextUpload}>
+                                <Text style={{fontSize: 17, alignSelf: "center"}}>Selecionar arquivo</Text>
+                                <MaterialIcons 
+                                    name="file-upload"
+                                    size={28}
+                                    color={'#000'}
+                                    marginRight={15}
+                                    
+                                />    
+                            </View>
+                        )}
+                    </TouchableOpacity>
                 </ScrollView>
             </View>
 

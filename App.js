@@ -1,9 +1,9 @@
-import { StatusBar } from 'expo-status-bar';
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 
 import StackRoutes from './src/main/mainstack';
-import Routes from './routes';
+// import Routes from './routes';
 
 export default function App() {
   return (
