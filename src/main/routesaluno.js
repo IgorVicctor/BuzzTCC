@@ -1,7 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import Home from '../screens/home';
 
 const Tab = createBottomTabNavigator();
 
@@ -10,6 +9,8 @@ import Leitor from '../screens/aluno/leitor';
 import Perfil from '../screens/aluno/perfil';
 import Configuracao from '../screens/configuracao';
 import Rota from '../screens/aluno/rota';
+import Home from '../screens/aluno/home';
+
 
 
 export default function RoutesAluno(){

@@ -1,100 +1,217 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
+import BackButtonHandler from '../../BackButtonHandler';
 
-const TOTAL_SEATS = 30;
-
-const Seat = ({ number, onPress, isOccupied }) => {
-  const seatColor = isOccupied ? 'red' : 'green';
-  return (
-    <TouchableOpacity onPress={onPress}>
-      <View style={[styles.seat, { backgroundColor: seatColor }]}>
-        <Text style={styles.seatNumber}>{number}</Text>
-      </View>
-    </TouchableOpacity>
+export default function Assento({ navigation }) {
+  const [seats, setSeats] = useState(
+    Array(44)
+      .fill()
+      .map((_, i) => ({ id: i, selected: false }))
   );
-};
 
-const BusRow = ({ rowNumber, onPress, occupiedSeats }) => {
-  const seats = [];
-  for (let i = 0; i < 4; i++) {
-    const seatNumber = rowNumber * 4 + i + 1;
-    const isOccupied = occupiedSeats.includes(seatNumber);
-    seats.push(
-      <Seat
-        key={seatNumber}
-        number={seatNumber}
-        onPress={() => onPress(seatNumber)}
-        isOccupied={isOccupied}
-      />,
-    );
-  }
-  return <View style={styles.busRow}>{seats}</View>;
-};
-
-export default function App() {
-  const [occupiedSeats, setOccupiedSeats] = useState([]);
-
-  const handleSeatPress = (seatNumber) => {
-    if (occupiedSeats.includes(seatNumber)) {
-      setOccupiedSeats(occupiedSeats.filter((num) => num !== seatNumber));
-    } else {
-      setOccupiedSeats([...occupiedSeats, seatNumber]);
-    }
+  const handleSeatPress = (id) => {
+    const updatedSeats = [...seats];
+    const index = updatedSeats.findIndex((seat) => seat.id === id);
+    updatedSeats[index].selected = !updatedSeats[index].selected;
+    setSeats(updatedSeats);
   };
 
-  const renderBusRows = () => {
-    const rows = [];
-    for (let i = 0; i < TOTAL_SEATS / 4; i++) {
-      rows.push(
-        <BusRow
-          key={i}
-          rowNumber={i}
-          onPress={handleSeatPress}
-          occupiedSeats={occupiedSeats}
-        />,
-      );
-    }
-    return rows;
+  const handleClearSeats = () => {
+    setSeats((prevSeats) =>
+      prevSeats.map((seat) => ({
+        ...seat,
+        selected: false,
+      }))
+    );
+  };
+
+  const handleSaveSeats = () => {
+    const selectedSeats = seats.filter((seat) => seat.selected);
+    // Salvar os assentos selecionados
+
+    // Exibir mensagem na tela
+    alert('Assentos selecionados: ' + selectedSeats.map((seat) => seat.id).join(', '));
+
+    // Limpar os assentos selecionados
+    handleClearSeats();
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.bus}>{renderBusRows()}</View>
-      <Text style={styles.legend}>Green seats are available. Red seats are occupied.</Text>
-    </View>
+    <BackButtonHandler navigation={navigation}>
+      <View style={styles.container}>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>Escolha seu assento</Text>
+          <Text style={styles.subtitle}>
+            Assentos disponíveis: {seats.filter((seat) => !seat.selected).length}
+          </Text>
+        </View>
+
+        <View style={styles.seatContainer}>
+          <View style={styles.row}>
+            <View style={styles.seatColumn}>
+              {seats.slice(0, 11).map((seat) => (
+                <TouchableOpacity
+                  key={seat.id}
+                  style={[
+                    styles.seat,
+                    seat.selected && styles.selectedSeat,
+                  ]}
+                  onPress={() => handleSeatPress(seat.id)}
+                  disabled={seat.selected}
+                >
+                  <Image
+                    source={require('./bus-seat.png')}
+                    style={[
+                      styles.seatImage,
+                      seat.selected && styles.selectedSeatImage,
+                    ]}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={styles.corridor} />
+
+            <View style={styles.seatColumn}>
+              {seats.slice(11, 22).map((seat) => (
+                <TouchableOpacity
+                  key={seat.id}
+                  style={[
+                    styles.seat,
+                    seat.selected && styles.selectedSeat,
+                  ]}
+                  onPress={() => handleSeatPress(seat.id)}
+                  disabled={seat.selected}
+                >
+                  <Image
+                    source={require('./bus-seat.png')}
+                    style={[
+                      styles.seatImage,
+                      seat.selected && styles.selectedSeatImage,
+                    ]}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={styles.corridor} />
+
+            <View style={styles.seatColumn}>
+              {seats.slice(22, 33).map((seat) => (
+                <TouchableOpacity
+                  key={seat.id}
+                  style={[
+                    styles.seat,
+                    seat.selected && styles.selectedSeat,
+                  ]}
+                  onPress={() => handleSeatPress(seat.id)}
+                  disabled={seat.selected}
+                >
+                  <Image
+                    source={require('./bus-seat.png')}
+                    style={[
+                      styles.seatImage,
+                      seat.selected && styles.selectedSeatImage,
+                    ]}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={styles.corridor} />
+
+            <View style={styles.seatColumn}>
+              {seats.slice(33).map((seat) => (
+                <TouchableOpacity
+                  key={seat.id}
+                  style={[
+                    styles.seat,
+                    seat.selected && styles.selectedSeat,
+                  ]}
+                  onPress={() => handleSeatPress(seat.id)}
+                  disabled={seat.selected}
+                >
+                  <Image
+                    source={require('./bus-seat.png')}
+                    style={[
+                      styles.seatImage,
+                      seat.selected && styles.selectedSeatImage,
+                    ]}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </View>
+
+        <TouchableOpacity style={styles.button} onPress={handleSaveSeats}>
+          <Text style={styles.buttonText}>Finalizar</Text>
+        </TouchableOpacity>
+      </View>
+    </BackButtonHandler>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    backgroundColor: '#fff',
   },
-  bus: {
-    flexDirection: 'column',
+  titleContainer: {
     alignItems: 'center',
+    marginBottom: 20,
   },
-  busRow: {
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: 'gray',
+  },
+  seatContainer: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+  },
+  row: {
     flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  seatColumn: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
+  corridor: {
+    width: 25,
   },
   seat: {
-    width: 50,
-    height: 50,
-    margin: 5,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 40,
+    height: 40,
+    marginVertical: 5,
   },
-  seatNumber: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+  selectedSeat: {
+    backgroundColor: 'transparent',
   },
-  legend: {
-    fontSize: 16,
+  seatImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+  },
+  selectedSeatImage: {
+    // tintColor: 'blue',
+  },
+  button: {
     marginTop: 20,
+    backgroundColor: 'dodgerblue',
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });

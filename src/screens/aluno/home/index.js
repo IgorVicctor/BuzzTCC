@@ -1,12 +1,12 @@
 import {React, useState} from "react";
 import {styles} from './style';
 import { View, Text, Image, ScrollView,  } from "react-native";
+import BackButtonHandler from "../../BackButtonHandler";
 
-
-export default function Home({navigation}) {
-
+export default function HomeAluno({ navigation }) {
 
     return (
+        <BackButtonHandler navigation={navigation}>
         <View style={styles.container}>
         
             <View style={styles.header}>
@@ -71,5 +71,6 @@ export default function Home({navigation}) {
             </View>
    
         </View>
+        </BackButtonHandler>
     );
 }

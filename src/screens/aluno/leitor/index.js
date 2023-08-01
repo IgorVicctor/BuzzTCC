@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import {styles} from './style';
 import { View, Text, Button, TouchableOpacity } from "react-native";
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import BackButtonHandler from '../../BackButtonHandler';
 
-export default function Leitor(){
+export default function Leitor({navigation}){
     const [hasPermission, setHasPermission] = useState(null);
     const [scanned, setScanned] = useState(false);
     const [text, setText] = useState();
@@ -41,6 +42,12 @@ export default function Leitor(){
         };
     
     return(
+      <BackButtonHandler navigation={navigation}>
+      {/* // <View style={styles.container}>
+      //     <View style={styles.header}></View>
+      //     <Text>Leitor</Text>
+      // </View> */}
+
         <View style={styles.container}>
             <View style={styles.header}></View>
 
@@ -59,5 +66,8 @@ export default function Leitor(){
             </TouchableOpacity>
 
         </View>
+        </BackButtonHandler>
     );
 }
+
+

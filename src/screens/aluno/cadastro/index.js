@@ -3,7 +3,7 @@ import { styles } from './style';
 import { View, TextInput, TouchableOpacity, Text, Dimensions, Keyboard, Pressable, Alert, ScrollView, KeyboardAvoidingView } from "react-native";
 import { AntDesign, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 import * as DocumentPicker from 'expo-document-picker';
-
+import BackButtonHandler from "../../BackButtonHandler";
 // const windowWidth = Dimensions.get('window').width;
 // const windowHeight = Dimensions.get('window').height;
 
@@ -19,6 +19,8 @@ export default function Cadastro({navigation}) {
     };
 
     return (
+        <BackButtonHandler navigation={navigation}>
+        
         <KeyboardAvoidingView  style={styles.MainContainer}>
             
              <View style={styles.containerHeader}>
@@ -85,5 +87,6 @@ export default function Cadastro({navigation}) {
                 </View>
             </View>
         </KeyboardAvoidingView >
+        </BackButtonHandler>
     );
 }
