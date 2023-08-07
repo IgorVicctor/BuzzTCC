@@ -1,12 +1,27 @@
-import {React, useState} from "react";
+import React, { useState, useEffect } from "react";
 import {styles} from './style';
 import { View, Text, Image, ScrollView,  } from "react-native";
 import BackButtonHandler from "../../BackButtonHandler";
+import axios from "axios";
 
 export default function HomeAluno({ navigation }) {
-
+    const [usuario, setUsuario] = useState(null);
+  
+    useEffect(() => {
+      const usuarioId = 1; // ID do usuário a ser buscado
+      
+      fetch(`http://192.168.31.95:8080/usuarios/${usuarioId}`)
+        .then(response => response.json())
+        .then(data => {
+          setUsuario(data);
+        })
+        .catch(error => {
+          console.error("Erro ao buscar dados do usuário:", error);
+        });
+    }, []);
+  
     return (
-        <BackButtonHandler navigation={navigation}>
+      <BackButtonHandler navigation={navigation}>
         <View style={styles.container}>
         
             <View style={styles.header}>
@@ -15,8 +30,8 @@ export default function HomeAluno({ navigation }) {
                         <Text style={{fontSize: 12,paddingHorizontal: 3, borderWidth: 1, borderRadius: 5, textAlign:"center", top: 20, marginBottom: 21}}>Selecionar foto</Text>
                     </TouchableOpacity> */}
                         <View style={styles.user}>
-                            <Text style={styles.name}>João Pedro</Text>
-                            <Text style={styles.userInfo}>Pedralva, MG</Text>
+                        <Text style={styles.name}>{usuario ? usuario.nome : "Carregando..."}</Text>
+                        <Text style={styles.userInfo}>Pedralva, MG</Text>
                         </View>
             </View>
            
