@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { View, TextInput, TouchableOpacity, Text, Alert } from "react-native";
 import { style } from "./style";
 import BackButtonHandler from "../BackButtonHandler";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // Importe o AsyncStorage
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+
 
 export default function Login({ navigation }) {
     const [email, setEmail] = useState("");
@@ -13,38 +15,44 @@ export default function Login({ navigation }) {
         email: email,
         senha: password,
       };
-  
-      fetch("http://192.168.31.95:8080/auth/login", {
-        method: "POST",
+    
+      axios.post("http://192.168.31.95:8080/auth/login", data, {
         headers: {
           "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+        }
       })
-        .then((response) => {
-          if (response.ok) {
-            return response.text();
+      .then((response) => {
+        if (response.status === 200) {
+          const authToken = response.data.token;
+    
+          if (authToken) {
+            console.log("Resposta do backend após o login:", response.data);
+    
+            // Salvar o token no AsyncStorage
+            AsyncStorage.setItem("authToken", authToken);
+            AsyncStorage.setItem("idTeste", response.data.id);
+
+            console.log("AAA: ",   response.data);
+
+    
+            // Navegar para a tela HomeAluno após o login bem-sucedido
+            // navigation.navigate("HomeAluno");
           } else {
-            throw new Error("Erro na resposta da solicitação.");
+            console.error("Token de autenticação não foi retornado na resposta.");
           }
-        })
-        .then((data) => {
-          console.log("Resposta do backend após o login:", data);
-  
-          // Salvar informações relevantes usando o AsyncStorage
-          AsyncStorage.setItem("authToken", data); // Exemplo de como salvar um token de autenticação
-  
-          // Navegar para a tela HomeAluno após o login bem-sucedido
-          navigation.navigate("HomeAluno");
-        })
-        .catch((error) => {
-          console.error("Erro durante o login:", error.message);
-          Alert.alert(
-            "Erro",
-            "Ocorreu um erro durante o login. Verifique sua conexão de rede e tente novamente."
-          );
-        });
+        } else {
+          throw new Error("Erro na resposta da solicitação.");
+        }
+      })
+      .catch((error) => {
+        console.error("Erro durante o login:", error.message);
+        Alert.alert(
+          "Erro",
+          "Ocorreu um erro durante o login. Verifique sua conexão de rede e tente novamente."
+        );
+      });
     };
+    
   
 
 

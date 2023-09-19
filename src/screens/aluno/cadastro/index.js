@@ -1,92 +1,119 @@
-import {React, useState} from "react";
-import { styles } from './style';
-import { View, TextInput, TouchableOpacity, Text, Dimensions, Keyboard, Pressable, Alert, ScrollView, KeyboardAvoidingView } from "react-native";
-import { AntDesign, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
-import * as DocumentPicker from 'expo-document-picker';
+import React, { useState } from "react";
+import { View, TextInput, TouchableOpacity, Text, Alert } from "react-native";
+import { styles } from "./style";
 import BackButtonHandler from "../../BackButtonHandler";
-// const windowWidth = Dimensions.get('window').width;
-// const windowHeight = Dimensions.get('window').height;
+import axios from "axios"; // Import axios for making API requests
 
-export default function Cadastro({navigation}) {
+export default function Cadastro({ navigation }) {
+  const [userData, setUserData] = useState({
+    nome: "",
+    email: "",
+    senha: "",
+    confirmarSenha: "",
+    faculdade: "",
+    curso: "",
+    periodo: "",
+    tipo_usuario: "aluno",
+  });
 
-    const [fileUri, setFileUri] = useState('');
+  const handleCadastro = async () => {
+    try {
+      // Make a POST request to your Spring Boot registration endpoint
+      const response = await axios.post(
+        "http://192.168.31.95:8080/api/usuarios/cadastro",
+        userData
+      );
+      // Handle success and navigation logic
+      console.log("Cadastro successful:", response.data);
+      // navigation.navigate("Login"); // Redirect to the login screen
+    } catch (error) {
+      // Handle error, show an alert, or other error handling logic
+      console.error("Cadastro error:", error);
+    }
+  };
 
-    const pickDocument = async () => {
-        const result = await DocumentPicker.getDocumentAsync();
-        if (!result.cancelled) {
-        setFileUri(result.uri);
-        }
-    };
+  return (
+    <BackButtonHandler navigation={navigation}>
+      <View style={styles.MainContainer}>
+        <View style={styles.containerHeader}>
+          <Text style={styles.title}>Criar Conta</Text>
+          <Text style={styles.subtitle}>
+            Crie uma conta para aproveitar{"\n"}nossos serviços
+          </Text>
+        </View>
 
-    return (
-        <BackButtonHandler navigation={navigation}>
-        
-        <KeyboardAvoidingView  style={styles.MainContainer}>
-            
-             <View style={styles.containerHeader}>
-                <Text style={styles.title}>Criar Conta</Text>
-                <Text style={styles.subtitle}>Crie uma conta para aproveitar{'\n'}nossos serviços</Text>
-            </View>
-            
-            <View style={styles.containerInput}>
-                <ScrollView style={{height: '40%'}} overScrollMode="never" showsVerticalScrollIndicator={false}>
-                    <TextInput style={styles.input} placeholder="Nome" />
-                    <TextInput style={styles.input} placeholder="E-mail" />
-                    <TextInput style={styles.input} placeholder="Senha" secureTextEntry={true} />
-                    <TextInput style={styles.input} placeholder="Confirmar Senha" secureTextEntry={true} />
-                    <TextInput style={styles.input} placeholder="Faculdade" />
-                    <TextInput style={styles.input} placeholder="Curso" />
-                    <TextInput style={styles.input} placeholder="Período" />
-                    <TouchableOpacity style={styles.uploadButton} onPress={pickDocument}>
-                        {fileUri ? (
-                            <Text style={styles.fileName}>{fileUri}</Text>
-                        ) : (
-                            <View style={styles.buttonTextUpload}>
-                                <Text style={{fontSize: 17, alignSelf: "center"}}>Selecionar arquivo</Text>
-                                <MaterialIcons 
-                                    name="file-upload"
-                                    size={28}
-                                    color={'#000'}
-                                    marginRight={15}
-                                    
-                                />    
-                            </View>
-                        )}
-                    </TouchableOpacity>
-                </ScrollView>
-            </View>
+        <View style={styles.containerInput}>
+          <TextInput
+            style={styles.input}
+            placeholder="Nome"
+            onChangeText={(text) =>
+              setUserData({ ...userData, nome: text })
+            }
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="E-mail"
+            onChangeText={(text) =>
+              setUserData({ ...userData, email: text })
+            }
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Senha"
+            secureTextEntry={true}
+            onChangeText={(text) =>
+              setUserData({ ...userData, senha: text })
+            }
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Confirmar Senha"
+            secureTextEntry={true}
+            onChangeText={(text) =>
+              setUserData({ ...userData, confirmarSenha: text })
+            }
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Faculdade"
+            onChangeText={(text) =>
+              setUserData({ ...userData, faculdade: text })
+            }
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Curso"
+            onChangeText={(text) =>
+              setUserData({ ...userData, curso: text })
+            }
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Período"
+            onChangeText={(text) =>
+              setUserData({ ...userData, periodo: text })
+            }
+          />
+        </View>
 
-            <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>Cadastrar</Text>
-            </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleCadastro}>
+          <Text style={styles.buttonText}>Cadastrar</Text>
+        </TouchableOpacity>
 
-            <TouchableOpacity style={styles.containerLogin} onPress={() => navigation.navigate("Login")}>
-                <Text style={styles.textLogin}>Ja possui uma conta</Text>
-            </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.containerLogin}
+          onPress={() => navigation.navigate("Login")}
+        >
+          <Text style={styles.textLogin}>Já possui uma conta</Text>
+        </TouchableOpacity>
 
-            <View style={styles.containerTipoCadastro}>
-                <Text style={styles.textTipoCadastro}>Ou continua com</Text>
-                <View style={styles.icons}>
-                    <AntDesign 
-                        name="google"
-                        size={42}
-                        color={'#ccc'}
-                        marginRight={15}
-                    />
-                    <FontAwesome5 
-                        name="facebook"
-                        size={40}
-                        color={'#ccc'}
-                        marginRight={15}
-                    />
-                    <AntDesign 
-                        name="apple1"
-                        size={40}
-                        color={'#ccc'}
-                    />
-                </View>
-            </View>
-        </KeyboardAvoidingView >
-        </BackButtonHandler>
-    );
+        <View style={styles.containerTipoCadastro}>
+          <Text style={styles.textTipoCadastro}>Ou continua com</Text>
+          <View style={styles.icons}>
+            {/* Ícones de autenticação */}
+          </View>
+        </View>
+      </View>
+    </BackButtonHandler>
+  );
 }

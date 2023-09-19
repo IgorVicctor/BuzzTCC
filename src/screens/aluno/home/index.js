@@ -1,24 +1,54 @@
 import React, { useState, useEffect } from "react";
 import {styles} from './style';
-import { View, Text, Image, ScrollView,  } from "react-native";
+import { View, Text, Image, ScrollView  } from "react-native";
 import BackButtonHandler from "../../BackButtonHandler";
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from "axios";
+import { useRoute } from "@react-navigation/native";
 
 export default function HomeAluno({ navigation }) {
     const [usuario, setUsuario] = useState(null);
+    const route = useRoute();
   
     useEffect(() => {
-      const usuarioId = 1; // ID do usuário a ser buscado
       
-      fetch(`http://192.168.31.95:8080/usuarios/${usuarioId}`)
-        .then(response => response.json())
-        .then(data => {
-          setUsuario(data);
-        })
-        .catch(error => {
-          console.error("Erro ao buscar dados do usuário:", error);
-        });
-    }, []);
+      // const userId = await AsyncStorage.getItem("userId");
+        // const usuarioId = 12; // ID do usuário a ser buscado
+      
+        AsyncStorage.getItem("authToken")
+          .then(token => {  
+            if (token) {
+              const headers = {
+                Authorization: `Bearer ${token}`
+              };
+
+              const rpz = AsyncStorage.getItem("idTeste").then(a => { rpz = a  })
+                
+
+              console.log("ABC: ", rpz);
+      
+              axios.get(`http://192.168.31.95:8080/api/usuarios/${12}`, { headers })
+                .then(response => {
+                  console.log("Status da resposta:", response.status);
+      
+                  if (response.status === 200) {
+                    setUsuario(response.data);
+                  } else {
+                    console.error("Erro durante a requisição:", response.data);
+                  }
+                })
+                .catch(error => {
+                  console.error("Erro durante a requisição:", error);
+                });
+            }
+          })
+          .catch(error => {
+            console.error("Erro ao obter o token:", error);
+          });
+      }, []);
+      
+      
+      
   
     return (
       <BackButtonHandler navigation={navigation}>

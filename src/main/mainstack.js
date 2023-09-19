@@ -31,6 +31,8 @@ function StackRoutes() {
       <Stack.Screen name="Configuracao" component={RoutesAluno}/>
       <Stack.Screen name="Rota" component={RoutesAluno}/>
       <Stack.Screen name="Assento" component={RoutesMotorista}/>
+      <Stack.Screen name="ListaUsuarios" component={RoutesMotorista}/>
+
 
     </Stack.Navigator>
       
