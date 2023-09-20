@@ -24,19 +24,22 @@ export default function Login({ navigation }) {
       .then((response) => {
         if (response.status === 200) {
           const authToken = response.data.token;
+          const authId = response.data.userId;
+
     
           if (authToken) {
-            console.log("Resposta do backend após o login:", response.data);
+            // console.log("Resposta do backend após o login:", response.data);
     
             // Salvar o token no AsyncStorage
             AsyncStorage.setItem("authToken", authToken);
-            AsyncStorage.setItem("idTeste", response.data.id);
+            AsyncStorage.setItem("idTeste", authId.toString());
 
-            console.log("AAA: ",   response.data);
+
+            // console.log("AAA: ",   response.data);
 
     
             // Navegar para a tela HomeAluno após o login bem-sucedido
-            // navigation.navigate("HomeAluno");
+            navigation.navigate("HomeAluno");
           } else {
             console.error("Token de autenticação não foi retornado na resposta.");
           }
@@ -90,6 +93,9 @@ export default function Login({ navigation }) {
 
         <TouchableOpacity style={style.button} onPress={handleLogin}>
           <Text style={style.buttonText}>Entrar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={style.button} onPress={navigation.navigate("HomeMotorista")}>
+          <Text style={style.buttonText}>Entrar Motorista</Text>
         </TouchableOpacity>
 
         <TouchableOpacity

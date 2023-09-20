@@ -1,62 +1,80 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Alert, Image, FlatList, TouchableOpacity, TextInput } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import BackButtonHandler from '../../BackButtonHandler';
+import axios from 'axios';
 
-const data = [
-  { id: 1, image: 'https://bootdey.com/img/Content/avatar/avatar1.png' },
-  { id: 2, image: 'https://bootdey.com/img/Content/avatar/avatar6.png' },
-  { id: 3, image: 'https://bootdey.com/img/Content/avatar/avatar2.png' },
-  { id: 4, image: 'https://bootdey.com/img/Content/avatar/avatar3.png' },
-  { id: 5, image: 'https://bootdey.com/img/Content/avatar/avatar4.png' },
-  { id: 6, image: 'https://bootdey.com/img/Content/avatar/avatar5.png' },
-  { id: 7, image: 'https://bootdey.com/img/Content/avatar/avatar7.png' },
-  { id: 8, image: 'https://bootdey.com/img/Content/avatar/avatar8.png' },
+export default function ListaUsuarios({ navigation }) {
+  const [users, setUsers] = useState([]);
+  const [searchText, setSearchText] = useState('');
 
-];
+  useEffect(() => {
+    // Função para carregar a lista de usuários da API
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('http://192.168.31.95:8080/api/usuarios/');
+        if (response.status === 200) {
+          // Se a solicitação for bem-sucedida, atualize o estado com os usuários recebidos
+          setUsers(response.data);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar usuários:', error);
+      }
+    };
 
-export default function ListaUsuarios({navigation}) {
-  const [users, setUsers] = useState(data);
+    // Chame a função para buscar os usuários ao montar o componente
+    fetchUsers();
+  }, []);
 
-  const showAlert = () => {
-    Alert.alert('Alert', 'Usuário Teste');
+  const showAlert = (user) => {
+    Alert.alert('Detalhes do Usuário', `Nome: ${user.nome}\nFaculdade: ${user.faculdade}\nCurso: ${user.curso}`);
   };
-
+  
   return (
     <BackButtonHandler navigation={navigation}>
-    <View style={styles.container}>
-      <View style={styles.header} />
+      <View style={styles.container}>
+        <View style={styles.header} />
 
-      <View>
-        <View style={styles.searchBar}>
-          <View style={styles.searchInputWrapper}>
-            <MaterialCommunityIcons style={styles.searchIcon} name="magnify" size={20} color="gray" />
-            <TextInput style={styles.searchInput} placeholder="Pesquisar" />
+        <View>
+          <View style={styles.searchBar}>
+            <View style={styles.searchInputWrapper}>
+              <MaterialCommunityIcons style={styles.searchIcon} name="magnify" size={20} color="gray" />
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Pesquisar"
+                value={searchText}
+                onChangeText={(text) => setSearchText(text)}
+              />
+            </View>
           </View>
-        </View>
-        <FlatList
-          style={styles.flatList}
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-          enableEmptySections={true}
-          data={users}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => {
-            return (
-              <TouchableOpacity onPress={showAlert}>
-                <View style={styles.box}>
-                  <Image style={styles.image} source={{ uri: item.image }} />
-                  <View style={styles.boxContent}>
-                    <Text style={styles.title}>Usuário Teste</Text>
-                    <Text style={styles.description}>RA: 123456</Text>
+          <FlatList
+            style={styles.flatList}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            enableEmptySections={true}
+            data={users}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => {
+              // Filtra os usuários com base no texto de pesquisa
+              if (searchText && !item.nome.includes(searchText)) {
+                return null;
+              }
+
+              return (
+                <TouchableOpacity onPress={() => showAlert(item)}>
+                  <View style={styles.box}>
+                    <Image style={styles.image} source={{ uri: item.image }} />
+                    <View style={styles.boxContent}>
+                      <Text style={styles.title}>{item.nome}</Text>
+                      <Text style={styles.description}>RA: {item.ra}</Text>
+                    </View>
                   </View>
-                </View>
-              </TouchableOpacity>
-            );
-          }}
-        />
+                </TouchableOpacity>
+              );
+            }}
+          />
+        </View>
       </View>
-    </View>
     </BackButtonHandler>
   );
 }

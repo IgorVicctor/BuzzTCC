@@ -4,33 +4,25 @@ import { View, Text, Image, ScrollView  } from "react-native";
 import BackButtonHandler from "../../BackButtonHandler";
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from "axios";
-import { useRoute } from "@react-navigation/native";
 
 export default function HomeAluno({ navigation }) {
-    const [usuario, setUsuario] = useState(null);
-    const route = useRoute();
-  
-    useEffect(() => {
-      
-      // const userId = await AsyncStorage.getItem("userId");
-        // const usuarioId = 12; // ID do usuário a ser buscado
-      
-        AsyncStorage.getItem("authToken")
-          .then(token => {  
-            if (token) {
-              const headers = {
-                Authorization: `Bearer ${token}`
-              };
+  const [usuario, setUsuario] = useState(null);
 
-              const rpz = AsyncStorage.getItem("idTeste").then(a => { rpz = a  })
-                
+  useEffect(() => {
+    AsyncStorage.getItem("authToken")
+      .then(token => {
+        if (token) {
+          const headers = {
+            Authorization: `Bearer ${token}`
+          };
 
-              console.log("ABC: ", rpz);
-      
-              axios.get(`http://192.168.31.95:8080/api/usuarios/${12}`, { headers })
+          AsyncStorage.getItem("idTeste")
+            .then(usuarioId => {
+              console.log("Id:", usuarioId);
+              axios.get(`http://192.168.31.95:8080/api/usuarios/${usuarioId}`, { headers })
                 .then(response => {
                   console.log("Status da resposta:", response.status);
-      
+
                   if (response.status === 200) {
                     setUsuario(response.data);
                   } else {
@@ -40,14 +32,17 @@ export default function HomeAluno({ navigation }) {
                 .catch(error => {
                   console.error("Erro durante a requisição:", error);
                 });
-            }
-          })
-          .catch(error => {
-            console.error("Erro ao obter o token:", error);
-          });
-      }, []);
-      
-      
+            })
+            .catch(error => {
+              console.error("Erro ao obter o valor de idTeste:", error);
+            });
+        }
+      })
+      .catch(error => {
+        console.error("Erro ao obter o token:", error);
+      });
+  }, []);
+
       
   
     return (
@@ -69,19 +64,19 @@ export default function HomeAluno({ navigation }) {
                 <Text style={{alignSelf: "flex-start", fontSize: 18, paddingLeft: 10, paddingBottom: 5, fontWeight: "bold"}}>Conta</Text>
                 <View style={styles.textInfo}>
                     <Text style={styles.textOne}>Faculdade </Text>
-                    <Text style={styles.textTwo}>FEPI</Text>
+                    <Text style={styles.textTwo}>{usuario ? usuario.faculdade : "Carregando..."}</Text>
                 </View>
                 <View style={styles.textInfo}>
                     <Text style={styles.textOne}>Curso </Text>
-                    <Text style={styles.textTwo}>Direito</Text>
+                    <Text style={styles.textTwo}>{usuario ? usuario.curso : "Carregando..."}</Text>
                 </View>
                 <View style={styles.textInfo}>
                     <Text style={styles.textOne}>Período </Text>
-                    <Text style={styles.textTwo}>2º</Text>
+                    <Text style={styles.textTwo}>{usuario ? usuario.periodo : "Carregando..."}</Text>
                 </View>
                 <View style={styles.textInfo}>
                     <Text style={styles.textOne}>Matrícula </Text>
-                    <Text style={styles.textTwo}>0191256</Text>
+                    <Text style={styles.textTwo}>{usuario ? usuario.matriculo : "Carregando..."}</Text>
                 </View>     
             </View>
 
