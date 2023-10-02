@@ -23,21 +23,21 @@ export default function HomeMotorista({navigation}) {
             <View style={styles.menu}>
                 <Text style={{alignSelf: "flex-start", fontSize: 18, paddingLeft: 10, paddingBottom: 5, fontWeight: "bold"}}>Conta</Text>
                 <View style={styles.textInfo}>
-                    <Text style={styles.textOne}>Ônibus </Text>
-                    <Text style={styles.textTwo}>...</Text>
+                    <Text style={styles.textOne}>Veículo </Text>
+                    <Text style={styles.textTwo}>Expresso Azul</Text>
                 </View>
                 <View style={styles.textInfo}>
                     <Text style={styles.textOne}>CNH </Text>
-                    <Text style={styles.textTwo}>05/36</Text>
+                    <Text style={styles.textTwo}>013661797</Text>
                 </View>
                 <View style={styles.textInfo}>
                     <Text style={styles.textOne}>Validade </Text>
-                    <Text style={styles.textTwo}>2027</Text>
+                    <Text style={styles.textTwo}>05/26</Text>
                 </View>
-                <View style={styles.textInfo}>
+                {/* <View style={styles.textInfo}>
                     <Text style={styles.textOne}>... </Text>
                     <Text style={styles.textTwo}>...</Text>
-                </View>     
+                </View>      */}
             </View>
 
             <View style={styles.calendar}>

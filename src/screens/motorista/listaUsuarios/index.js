@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Alert, Image, FlatList, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Alert, Image, FlatList, TouchableOpacity, TextInput, ScrollView, Modal } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import BackButtonHandler from '../../BackButtonHandler';
 import axios from 'axios';
@@ -7,6 +7,7 @@ import axios from 'axios';
 export default function ListaUsuarios({ navigation }) {
   const [users, setUsers] = useState([]);
   const [searchText, setSearchText] = useState('');
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     // Função para carregar a lista de usuários da API
@@ -15,7 +16,8 @@ export default function ListaUsuarios({ navigation }) {
         const response = await axios.get('http://192.168.31.95:8080/api/usuarios/');
         if (response.status === 200) {
           // Se a solicitação for bem-sucedida, atualize o estado com os usuários recebidos
-          setUsers(response.data);
+          const alunos = response.data.filter(usuario => usuario.tipo_usuario === 'ALUNO');
+          setUsers(alunos);
         }
       } catch (error) {
         console.error('Erro ao buscar usuários:', error);
@@ -27,53 +29,71 @@ export default function ListaUsuarios({ navigation }) {
   }, []);
 
   const showAlert = (user) => {
-    Alert.alert('Detalhes do Usuário', `Nome: ${user.nome}\nFaculdade: ${user.faculdade}\nCurso: ${user.curso}`);
+    setSelectedUser(user);
   };
-  
+
+  const closeModal = () => {
+    setSelectedUser(null);
+  };
+
   return (
     <BackButtonHandler navigation={navigation}>
       <View style={styles.container}>
         <View style={styles.header} />
 
-        <View>
-          <View style={styles.searchBar}>
-            <View style={styles.searchInputWrapper}>
-              <MaterialCommunityIcons style={styles.searchIcon} name="magnify" size={20} color="gray" />
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Pesquisar"
-                value={searchText}
-                onChangeText={(text) => setSearchText(text)}
-              />
+        <View style={styles.searchBar}>
+          <View style={styles.searchInputWrapper}>
+            <MaterialCommunityIcons style={styles.searchIcon} name="magnify" size={20} color="gray" />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Pesquisar"
+              value={searchText}
+              onChangeText={(text) => setSearchText(text)}
+            />
+          </View>
+        </View>
+        
+        <FlatList
+          style={styles.flatList}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          enableEmptySections={true}
+          data={users}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
+          renderItem={({ item }) => {
+            // Filtra os usuários com base no texto de pesquisa
+            if (searchText && !item.nome.includes(searchText)) {
+              return null;
+            }
+
+            return (
+              <TouchableOpacity onPress={() => showAlert(item)}>
+                <View style={styles.box}>
+                  <Image style={styles.image} source={{ uri: item.image }} />
+                  <View style={styles.boxContent}>
+                    <Text style={styles.title}>{item.nome}</Text>
+                    <Text style={styles.description}>RA: {item.matricula}</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+        />
+
+        <Modal visible={selectedUser !== null} animationType="slide" transparent={true}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+                <Text style={styles.closeButtonText}>X</Text>
+              </TouchableOpacity>
+              <Text style={styles.modalTitle}>Dados do Aluno</Text>
+              <Text style={styles.modalText}><Text style={styles.boldText}>Nome:</Text> {selectedUser?.nome}</Text>
+              <Text style={styles.modalText}><Text style={styles.boldText}>Faculdade:</Text> {selectedUser?.faculdade}</Text>
+              <Text style={styles.modalText}><Text style={styles.boldText}>Curso:</Text> {selectedUser?.curso}</Text>
+              <Text style={styles.modalText}><Text style={styles.boldText}>Período:</Text> {selectedUser?.periodo}</Text>
             </View>
           </View>
-          <FlatList
-            style={styles.flatList}
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
-            enableEmptySections={true}
-            data={users}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => {
-              // Filtra os usuários com base no texto de pesquisa
-              if (searchText && !item.nome.includes(searchText)) {
-                return null;
-              }
-
-              return (
-                <TouchableOpacity onPress={() => showAlert(item)}>
-                  <View style={styles.box}>
-                    <Image style={styles.image} source={{ uri: item.image }} />
-                    <View style={styles.boxContent}>
-                      <Text style={styles.title}>{item.nome}</Text>
-                      <Text style={styles.description}>RA: {item.ra}</Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              );
-            }}
-          />
-        </View>
+        </Modal>
       </View>
     </BackButtonHandler>
   );
@@ -86,7 +106,7 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     marginTop: '40%',
-    // paddingHorizontal: 16,
+    paddingHorizontal: 5,
     paddingTop: 16,
     paddingBottom: 8,
   },
@@ -117,9 +137,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
-  flatList: {
-    // marginTop: '21%',
-  },
+  flatList: {},
   separator: {
     height: 1,
     backgroundColor: 'lightgray',
@@ -149,5 +167,41 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    width: '80%',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#151515',
+    textAlign: 'center'
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  boldText: {
+    fontWeight: 'bold',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 5,
+    right: 10,
+  },
+  closeButtonText: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: 'blue',
   },
 });

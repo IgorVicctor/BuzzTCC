@@ -77,7 +77,7 @@ export const styles = StyleSheet.create({
         justifyContent: 'space-around',
         alignSelf: "center",
         alignItems: 'center',
-        top:  windowHeight * 0.45,
+        top:  windowHeight * 0.4,
         padding: 15.5,
         flexDirection: 'row',
         paddingVertical: 15,

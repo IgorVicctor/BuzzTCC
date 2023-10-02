@@ -18,16 +18,27 @@ export default function Cadastro({ navigation }) {
 
   const handleCadastro = async () => {
     try {
-      // Make a POST request to your Spring Boot registration endpoint
       const response = await axios.post(
         "http://192.168.31.95:8080/api/usuarios/cadastro",
         userData
       );
-      // Handle success and navigation logic
       console.log("Cadastro successful:", response.data);
-      // navigation.navigate("Login"); // Redirect to the login screen
+
+      // Mostrar o alerta de cadastro bem-sucedido
+      Alert.alert(
+        "Cadastro Realizado",
+        "Seu cadastro foi realizado com sucesso!",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              // Navegar para a tela de login após o alerta ser fechado
+              navigation.navigate("Login");
+            },
+          },
+        ]
+      );
     } catch (error) {
-      // Handle error, show an alert, or other error handling logic
       console.error("Cadastro error:", error);
     }
   };

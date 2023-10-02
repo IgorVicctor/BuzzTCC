@@ -1,17 +1,39 @@
-import React from 'react';
-import {View, Text, Image} from 'react-native';
-import {styles} from './style'
+import React, { useEffect, useState } from 'react';
+import { View } from 'react-native';
+import QRCodeSVG from 'react-native-qrcode-svg';
+import { styles } from './style';
 import BackButtonHandler from '../../BackButtonHandler';
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
-import qrcodeexemplo from '../../../../assets/qrcodeexemplo.jpg'
+export default function QRCode({ navigation }) {
+  const [usuarioId, setUsuarioId] = useState(null); 
+  useEffect(() => {
+    const getUsuarioId = async () => {
+      try {
+        const id = await AsyncStorage.getItem('idTeste');
+        if (id !== null) {
+          setUsuarioId(id);
+        }
+      } catch (error) {
+        console.error('Erro ao obter o ID do usuário:', error);
+      }
+    };
+    getUsuarioId(); 
+  }, []); 
 
-export default function QRCode({navigation}){
-    return(
-        <BackButtonHandler navigation={navigation}>
-        <View style={styles.container}>
-            <View style={styles.header}></View>
-            <Image source={qrcodeexemplo} style={{ width: 300, height: 300 }} />
-        </View>
-        </BackButtonHandler>
-    );
+  const valorQRCode = usuarioId.toString();
+
+  return (
+    <BackButtonHandler navigation={navigation}>
+      <View style={styles.container}>
+        <View style={styles.header}></View>
+        <QRCodeSVG
+          value={valorQRCode}
+          size={250}
+          color="black"
+          backgroundColor="white"
+        />
+      </View>
+    </BackButtonHandler>
+  );
 }

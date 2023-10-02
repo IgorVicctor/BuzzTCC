@@ -34,7 +34,7 @@ export default function Configuracao({ navigation }) {
           />
           <View style={{ justifyContent: 'center', marginLeft: 20, marginTop: 5 }}>
             <Text style={{ fontSize: 15, fontWeight: '500', color: '#CCCCCC' }}>Olá,{'\n'}</Text>
-            <Text style={{ fontSize: 15, fontWeight: '500', color: '#fff', bottom: 18 }}>João Pedro</Text>
+            <Text style={{ fontSize: 15, fontWeight: '500', color: '#fff', bottom: 18 }}>teste</Text>
           </View>
         </View>
       </View>
