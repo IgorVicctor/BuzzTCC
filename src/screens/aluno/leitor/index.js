@@ -1,73 +1,101 @@
 import React, { useState, useEffect } from 'react';
-import {styles} from './style';
-import { View, Text, Button, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import axios from 'axios';
 import BackButtonHandler from '../../BackButtonHandler';
+import { styles } from './style';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Leitor({navigation}){
-    const [hasPermission, setHasPermission] = useState(null);
-    const [scanned, setScanned] = useState(false);
-    const [text, setText] = useState();
+export default function Leitor({ navigation }) {
+  const [hasPermission, setHasPermission] = useState(null);
+  const [scanearCodigo, SetScanearCodigo] = useState(false);
+  const [text, setText] = useState('');
 
-    const askForCameraPermission = () => {
-        (async () => {
-          const { status } = await BarCodeScanner.requestPermissionsAsync();
-          setHasPermission(status === 'granted');
-        })()
+  const [usuarioId, setUsuarioId] = useState();
+  useEffect(() => {
+    const getUsuarioId = async () => {
+      try {
+        const id = await AsyncStorage.getItem('idTeste');
+        if (id !== null) {
+          setUsuarioId(id);
+        }
+      } catch (error) {
+        console.error('Erro ao obter o ID do usuário:', error);
       }
-    
-      useEffect(() => {
-        askForCameraPermission();
-      }, []);
-    
-      if (hasPermission === null) {
-        return (
-          <View style={styles.container}>
-            <Text>Pedindo a permissão para usar a câmera</Text>
-          </View>)
+    };
+    getUsuarioId();
+  }, []);
+
+  const userId = `${usuarioId}`;
+
+  const askForCameraPermission = async () => {
+    const { status } = await BarCodeScanner.requestPermissionsAsync();
+    setHasPermission(status === 'granted');
+  };
+
+  useEffect(() => {
+    askForCameraPermission();
+  }, []);
+
+  const handleBarCodeScanned = async ({ data }) => {
+    if (scanearCodigo) return; // Stop scanning if the code has been scanned
+    console.log(data);
+    setText(data);
+    SetScanearCodigo(true); // Mark the code as scanned
+
+    try {
+      const response = await axios.post(
+        `http://192.168.31.95:8080/onibus/adicionar-aluno/${data}/${userId}`
+      );
+      console.log(response.data);
+
+      if (response.status === 200) {
+        Alert.alert('Sucesso', response.data);
+      } else {
+        Alert.alert('Erro', response.data);
       }
-      if (hasPermission === false) {
-        return (
-          <View style={styles.container}>
-            <Text style={{ margin: 10 }}>Sem acesso à câmera</Text>
-            <Button title={'Permitir câmera'} onPress={() => askForCameraPermission()} />
-          </View>)
-      }
+    } catch (error) {
+      Alert.alert('Erro', response.data);
+    }
+  };
 
-      const handleBarCodeScanned = ({ data }) => {
-    
-          console.log(data);
-          setText("");
-          setScanned(true);
-        };
-    
-    return(
-      <BackButtonHandler navigation={navigation}>
-      {/* // <View style={styles.container}>
-      //     <View style={styles.header}></View>
-      //     <Text>Leitor</Text>
-      // </View> */}
+  const restartScanning = () => {
+    SetScanearCodigo(false); // Allow scanning again
+    setText(''); // Clear the text
+  };
 
-        <View style={styles.container}>
-            <View style={styles.header}></View>
+  return (
+    <BackButtonHandler navigation={navigation}>
+      <View style={styles.container}>
+        <View style={styles.header}></View>
 
-            <View style={styles.barcodebox}>
-                <BarCodeScanner
-                    onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-                    style={{ height: 500, width: 530 }} />
-            </View>
-
-            {scanned && <Button title={'Scannear de novo?'} onPress={() => setScanned(false)} color='#2c88d9' style={styles.teste} />}
-
-            <Text style={styles.maintext}>{text}</Text>
-
-            <TouchableOpacity style={{backgroundColor: '#2c88d9', top: 40, width: "35%"}}>
-                <Text style={[styles.maintext, {color:"#fff", fontWeight: 'bold', textAlign: "center"}]}>Iniciar Leitura</Text>
-            </TouchableOpacity>
-
+        <View style={styles.barcodebox}>
+          <BarCodeScanner
+            onBarCodeScanned={scanearCodigo ? undefined : handleBarCodeScanned} // Only handle scans if the code has not been scanned
+            style={{ height: 500, width: 530 }}
+          />
         </View>
-        </BackButtonHandler>
-    );
+
+        {/* <Text style={styles.maintext}>{text}</Text> */}
+
+        <TouchableOpacity
+          style={{
+            backgroundColor: '#2c88d9',
+            top: 40,
+            width: '35%',
+          }}
+          onPress={restartScanning} // Restart scanning
+        >
+          <Text
+            style={[
+              styles.maintext,
+              { color: '#fff', fontWeight: 'bold', textAlign: 'center' },
+            ]}
+          >
+            Iniciar Leitura
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </BackButtonHandler>
+  );
 }
-
-

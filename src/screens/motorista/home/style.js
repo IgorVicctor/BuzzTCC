@@ -85,16 +85,22 @@ export const styles = StyleSheet.create({
         position: 'absolute',
         marginTop: windowHeight * 0.305,
       },
-      day:{
+      dia:{
         justifyContent:"center",
         alignItems: "center",
       },
-      nameDay: {
+      nomeDia: {
         fontSize: 18,
         color: "#B8B7B9",
       },
-      numberDay: {
+      numeroDia: {
         fontSize: 17,
         marginTop: 15
+      },
+      diasSelecionados: {
+        color: '#F16363',
+        fontSize: 12,
+        position: "absolute",
+        top: 62
       }
 })

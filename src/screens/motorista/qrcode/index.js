@@ -6,7 +6,7 @@ import BackButtonHandler from '../../BackButtonHandler';
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 export default function QRCode({ navigation }) {
-  const [usuarioId, setUsuarioId] = useState(null); 
+  const [usuarioId, setUsuarioId] = useState(); 
   useEffect(() => {
     const getUsuarioId = async () => {
       try {
@@ -21,7 +21,7 @@ export default function QRCode({ navigation }) {
     getUsuarioId(); 
   }, []); 
 
-  const valorQRCode = usuarioId.toString();
+  const valorQRCode = `${usuarioId}`;
 
   return (
     <BackButtonHandler navigation={navigation}>

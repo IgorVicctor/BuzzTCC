@@ -32,7 +32,6 @@ export const styles = StyleSheet.create({
     //     borderRadius: 30,
     //     backgroundColor: 'tomato'
     //   }
-
     maintext: {
         fontSize: 15,
         margin: 10,

@@ -3,28 +3,37 @@ import { StyleSheet, Text, View, Alert, Image, FlatList, TouchableOpacity, TextI
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import BackButtonHandler from '../../BackButtonHandler';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ListaUsuarios({ navigation }) {
   const [users, setUsers] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
+  const [authToken, setAuthToken] = useState(null);
 
   useEffect(() => {
-    // Função para carregar a lista de usuários da API
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://192.168.31.95:8080/api/usuarios/');
-        if (response.status === 200) {
-          // Se a solicitação for bem-sucedida, atualize o estado com os usuários recebidos
-          const alunos = response.data.filter(usuario => usuario.tipo_usuario === 'ALUNO');
-          setUsers(alunos);
+        const token = await AsyncStorage.getItem("authToken");
+        if (token) {
+          setAuthToken(token);
+
+          const response = await axios.get('http://192.168.31.95:8080/api/usuarios/', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (response.status === 200) {
+            const alunos = response.data.filter(usuario => usuario.tipo_usuario === 'ALUNO');
+            setUsers(alunos);
+          }
         }
       } catch (error) {
         console.error('Erro ao buscar usuários:', error);
       }
     };
 
-    // Chame a função para buscar os usuários ao montar o componente
     fetchUsers();
   }, []);
 
@@ -52,24 +61,29 @@ export default function ListaUsuarios({ navigation }) {
             />
           </View>
         </View>
-        
+
         <FlatList
           style={styles.flatList}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           enableEmptySections={true}
-          data={users}
+          data={users
+            .filter(user => !searchText || user.nome.toLowerCase().includes(searchText.toLowerCase()))
+            .sort((a, b) => a.nome.localeCompare(b.nome))
+          }
           showsVerticalScrollIndicator={false}
-          keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
+          keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => {
-            // Filtra os usuários com base no texto de pesquisa
-            if (searchText && !item.nome.includes(searchText)) {
-              return null;
-            }
-
             return (
               <TouchableOpacity onPress={() => showAlert(item)}>
                 <View style={styles.box}>
-                  <Image style={styles.image} source={{ uri: item.image }} />
+                  <Image
+                    style={styles.image}
+                    source={
+                      item.imagem
+                        ? { uri: `data:image/png;base64,${item.imagem}` }
+                        : { uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzO5Fb637v1B6CAONSt4mGfckCw1gM8tHaJw&usqp=CAU' }
+                    }
+                  />
                   <View style={styles.boxContent}>
                     <Text style={styles.title}>{item.nome}</Text>
                     <Text style={styles.description}>RA: {item.matricula}</Text>
@@ -87,10 +101,18 @@ export default function ListaUsuarios({ navigation }) {
                 <Text style={styles.closeButtonText}>X</Text>
               </TouchableOpacity>
               <Text style={styles.modalTitle}>Dados do Aluno</Text>
-              <Text style={styles.modalText}><Text style={styles.boldText}>Nome:</Text> {selectedUser?.nome}</Text>
-              <Text style={styles.modalText}><Text style={styles.boldText}>Faculdade:</Text> {selectedUser?.faculdade}</Text>
-              <Text style={styles.modalText}><Text style={styles.boldText}>Curso:</Text> {selectedUser?.curso}</Text>
-              <Text style={styles.modalText}><Text style={styles.boldText}>Período:</Text> {selectedUser?.periodo}</Text>
+              <Text style={styles.modalText}>
+                <Text style={styles.boldText}>Nome:</Text> {selectedUser?.nome}
+              </Text>
+              <Text style={styles.modalText}>
+                <Text style={styles.boldText}>Faculdade:</Text> {selectedUser?.faculdade}
+              </Text>
+              <Text style={styles.modalText}>
+                <Text style={styles.boldText}>Curso:</Text> {selectedUser?.curso}
+              </Text>
+              <Text style={styles.modalText}>
+                <Text style={styles.boldText}>Período:</Text> {selectedUser?.periodo}
+              </Text>
             </View>
           </View>
         </Modal>
@@ -167,6 +189,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
+    marginRight: 6,
   },
   modalContainer: {
     flex: 1,
@@ -185,7 +208,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10,
     color: '#151515',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   modalText: {
     fontSize: 16,

@@ -1,116 +1,131 @@
 import React, { useState, useEffect } from "react";
-import {styles} from './style';
-import { View, Text, Image, ScrollView  } from "react-native";
+import { styles } from "./style";
+import { View, Text, Image } from "react-native";
 import BackButtonHandler from "../../BackButtonHandler";
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import base64 from 'base64-js';
+import moment from 'moment';
+
+function WeekDay({ dia, data, diaSelecionado }) {
+  return (
+    <View style={styles.dia}>
+      <Text style={styles.nomeDia}>{dia}</Text>
+      <Text style={styles.numeroDia}>{data}</Text>
+      {diaSelecionado && (
+        <Text style={{ color: '#F16363', fontSize: 12, position: "absolute", top: 62 }}>●</Text>
+      )}
+    </View>
+  );
+}
 
 export default function HomeAluno({ navigation }) {
   const [usuario, setUsuario] = useState(null);
+  const [diaMarcados, setDiaMarcados] = useState([]);
+  const [diaDaSemaana, setDiaDaSemaana] = useState([]); 
+
+  const fetchUserData = async () => {
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) return;
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const usuarioId = await AsyncStorage.getItem("idTeste");
+      if (!usuarioId) return;
+
+      const response = await axios.get(`http://192.168.31.95:8080/api/usuarios/${usuarioId}`, {
+        headers,
+      });
+
+      if (response.status === 200) {
+        const imageBuffer = response.data.imagem ? base64.toByteArray(response.data.imagem) : null;
+        const imageUri = imageBuffer ? `data:image/jpeg;base64,${base64.fromByteArray(imageBuffer)}` : null;
+
+        setUsuario({
+          ...response.data,
+          imagem: imageUri,
+        });
+
+        const diasSelecionados = response.data.selecionaDias.split(',').map(item => item.trim());
+        const diaMarcados = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"].map(dia => diasSelecionados.includes(dia));
+        setDiaMarcados(diaMarcados);
+      } else {
+        console.error("Erro durante a requisição:", response.data);
+      }
+    } catch (error) {
+      console.error("Erro durante a requisição:", error);
+    }
+  };
 
   useEffect(() => {
-    AsyncStorage.getItem("authToken")
-      .then(token => {
-        if (token) {
-          const headers = {
-            Authorization: `Bearer ${token}`
-          };
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchUserData();
+    });
 
-          AsyncStorage.getItem("idTeste")
-            .then(usuarioId => {
-              console.log("Id:", usuarioId);
-              axios.get(`http://192.168.31.95:8080/api/usuarios/${usuarioId}`, { headers })
-                .then(response => {
-                  console.log("Status da resposta:", response.status);
+    return unsubscribe;
+  }, [navigation]);
 
-                  if (response.status === 200) {
-                    setUsuario(response.data);
-                  } else {
-                    console.error("Erro durante a requisição:", response.data);
-                  }
-                })
-                .catch(error => {
-                  console.error("Erro durante a requisição:", error);
-                });
-            })
-            .catch(error => {
-              console.error("Erro ao obter o valor de idTeste:", error);
-            });
-        }
-      })
-      .catch(error => {
-        console.error("Erro ao obter o token:", error);
-      });
+  useEffect(() => {
+    const diaAtual = moment();
+    const segunda = diaAtual.clone().startOf('Semana');
+    const sexta = diaAtual.clone().startOf('Semana').add(4, 'days');
+    const dataSemana = [segunda, segunda.clone().add(1, 'days'), segunda.clone().add(2, 'days'), segunda.clone().add(3, 'days'), sexta];
+    setDiaDaSemaana(dataSemana.map(date => date.format("DD")));
   }, []);
 
-      
-  
-    return (
-      <BackButtonHandler navigation={navigation}>
-        <View style={styles.container}>
-        
-            <View style={styles.header}>
-                <Image style={styles.avatar} source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzO5Fb637v1B6CAONSt4mGfckCw1gM8tHaJw&usqp=CAU' }}/>
-                    {/* <TouchableOpacity onPress={pickImage}>
-                        <Text style={{fontSize: 12,paddingHorizontal: 3, borderWidth: 1, borderRadius: 5, textAlign:"center", top: 20, marginBottom: 21}}>Selecionar foto</Text>
-                    </TouchableOpacity> */}
-                        <View style={styles.user}>
-                        <Text style={styles.name}>{usuario ? usuario.nome : "Carregando..."}</Text>
-                        <Text style={styles.userInfo}>Pedralva, MG</Text>
-                        </View>
-            </View>
-           
-            <View style={styles.menu}>
-                <Text style={{alignSelf: "flex-start", fontSize: 18, paddingLeft: 10, paddingBottom: 5, fontWeight: "bold"}}>Conta</Text>
-                <View style={styles.textInfo}>
-                    <Text style={styles.textOne}>Faculdade </Text>
-                    <Text style={styles.textTwo}>{usuario ? usuario.faculdade : "Carregando..."}</Text>
-                </View>
-                <View style={styles.textInfo}>
-                    <Text style={styles.textOne}>Curso </Text>
-                    <Text style={styles.textTwo}>{usuario ? usuario.curso : "Carregando..."}</Text>
-                </View>
-                <View style={styles.textInfo}>
-                    <Text style={styles.textOne}>Período </Text>
-                    <Text style={styles.textTwo}>{usuario ? usuario.periodo : "Carregando..."}</Text>
-                </View>
-                <View style={styles.textInfo}>
-                    <Text style={styles.textOne}>Matrícula </Text>
-                    <Text style={styles.textTwo}>{usuario ? usuario.matriculo : "Carregando..."}</Text>
-                </View>     
-            </View>
-
-            <View style={styles.calendar}>
-                <View style={styles.day}>
-                    <Text style={styles.nameDay}>SEG</Text>
-                    <Text style={styles.numberDay}>15</Text>
-                    <Text style={{color: '#F16363', fontSize: 45, position: "absolute", top: 25}}>.</Text>
-                </View>
-                <View style={styles.day}>
-                    
-                    <Text style={styles.nameDay}>TER</Text>
-                {/* <View style={{ backgroundColor: "#DCDCDC",  width: 50, height: 50, borderRadius: 25, justifyContent: "center", alignItems: "center"}}>  */}
-                    <Text style={styles.numberDay}>16</Text>
-                    <Text style={{color: '#F16363', fontSize: 45, position: "absolute", top: 25}}>.</Text>
-                {/* </View> */}
-
-                </View>
-                <View style={styles.day}>
-                    <Text style={styles.nameDay}>QUA</Text>
-                    <Text style={styles.numberDay}>17</Text>
-                    <Text style={{color: '#F16363', fontSize: 45, position: "absolute", top: 25}}>.</Text>
-                </View>
-                <View style={styles.day}>
-                    <Text style={styles.nameDay}>QUI</Text>
-                    <Text style={styles.numberDay}>18</Text>
-                </View>
-                <View style={styles.day}>
-                    <Text style={styles.nameDay}>SEX</Text>
-                    <Text style={styles.numberDay}>19</Text>
-                </View>
-            </View>
-   
+  return (
+    <BackButtonHandler navigation={navigation}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          {usuario && usuario.imagem ? (
+            <Image source={{ uri: usuario.imagem }} style={styles.avatar} />
+          ) : (
+            <Image
+              source={{
+                uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzO5Fb637v1B6CAONSt4mGfckCw1gM8tHaJw&usqp=CAU",
+              }}
+              style={styles.avatar}
+            />
+          )}
+          <View style={styles.user}>
+            <Text style={styles.name}>{usuario ? usuario.nome : "Carregando..."}</Text>
+            <Text style={styles.userInfo}>
+              {usuario ? usuario.cidade : "Carregando..."}
+            </Text>
+          </View>
         </View>
-        </BackButtonHandler>
-    );
+
+        <View style={styles.menu}>
+          <Text style={{ alignSelf: "flex-start", fontSize: 18, paddingLeft: 10, paddingBottom: 5, fontWeight: "bold" }}>Conta</Text>
+          <View style={styles.textInfo}>
+            <Text style={styles.textOne}>Faculdade </Text>
+            <Text style={styles.textTwo}>{usuario ? usuario.faculdade : "Carregando..."}</Text>
+          </View>
+          <View style={styles.textInfo}>
+            <Text style={styles.textOne}>Curso </Text>
+            <Text style={styles.textTwo}>{usuario ? usuario.curso : "Carregando..."}</Text>
+          </View>
+          <View style={styles.textInfo}>
+            <Text style={styles.textOne}>Período </Text>
+            <Text style={styles.textTwo}>{usuario ? usuario.periodo : "Carregando..."}</Text>
+          </View>
+          <View style={styles.textInfo}>
+            <Text style={styles.textOne}>Matrícula </Text>
+            <Text style={styles.textTwo}>{usuario ? usuario.matricula : "Carregando..."}</Text>
+          </View>
+        </View>
+
+        <View style={styles.calendar}>
+          <WeekDay dia="SEG" data={diaDaSemaana[0]} diaSelecionado={diaMarcados[0]} />
+          <WeekDay dia="TER" data={diaDaSemaana[1]} diaSelecionado={diaMarcados[1]} />
+          <WeekDay dia="QUA" data={diaDaSemaana[2]} diaSelecionado={diaMarcados[2]} />
+          <WeekDay dia="QUI" data={diaDaSemaana[3]} diaSelecionado={diaMarcados[3]} />
+          <WeekDay dia="SEX" data={diaDaSemaana[4]} diaSelecionado={diaMarcados[4]} />
+        </View>
+      </View>
+    </BackButtonHandler>
+  );
 }

@@ -4,6 +4,7 @@ import { style } from "./style";
 import BackButtonHandler from "../BackButtonHandler";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
@@ -24,36 +25,34 @@ export default function Login({ navigation }) {
       if (response.status === 200) {
         const authToken = response.data.token;
         const authId = response.data.userId;
-        const tipoUsuario = response.data.tipoUsuario; // Certifique-se de que o servidor esteja retornando o tipoUsuario
+        const tipoUsuario = response.data.tipoUsuario;
 
         if (authToken) {
           console.log("Resposta do backend após o login:", response.data);
 
-          // Salvar o token, ID e tipoUsuario no AsyncStorage
           AsyncStorage.setItem("authToken", authToken);
           AsyncStorage.setItem("idTeste", authId.toString());
           AsyncStorage.setItem("tipoUsuario", tipoUsuario);
 
-          // Verificar o tipoUsuario e navegar para a tela apropriada
           if (tipoUsuario === "ALUNO") {
             navigation.navigate("HomeAluno");
           } else if (tipoUsuario === "MOTORISTA") {
             navigation.navigate("HomeMotorista");
-          } else {
-            // Tipo de usuário desconhecido ou tratamento adicional
           }
-        } else {
-          console.error("Token de autenticação não foi retornado na resposta.");
+
+        } else {a
+          Alert.alert("Erro", "Este email não está cadastrado. Verifique o email.");
         }
+      } else if (response.status === 401) {
+        Alert.alert("Erro", "Email ou senha incorretos. Verifique as credenciais.");
       } else {
         throw new Error("Erro na resposta da solicitação.");
       }
     })
     .catch((error) => {
-      console.error("Erro durante o login:", error.message);
       Alert.alert(
         "Erro",
-        "Ocorreu um erro durante o login. Verifique sua conexão de rede e tente novamente."
+        "Email ou senha incorretos. Verifique as credenciais."
       );
     });
   };
@@ -104,7 +103,23 @@ export default function Login({ navigation }) {
         <View style={style.containerTipoCadastro}>
           <Text style={style.textTipoCadastro}>Ou continua com</Text>
           <View style={style.icons}>
-            {/* Ícones de autenticação */}
+              <AntDesign 
+                  name="google"
+                  size={42}
+                  color={'#ccc'}
+                  marginRight={15}
+              />
+              <FontAwesome5 
+                  name="facebook"
+                  size={40}
+                  color={'#ccc'}
+                  marginRight={15}
+              />
+              <AntDesign 
+                  name="apple1"
+                  size={40}
+                  color={'#ccc'}
+              />
           </View>
         </View>
       </View>

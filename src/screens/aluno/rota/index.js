@@ -1,51 +1,70 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import MapView, { Marker, Polyline } from 'react-native-maps';
+import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
+import MapViewDirections from 'react-native-maps-directions';
 
 export default function Rota() {
-  const [origin, setOrigin] = useState(null);
-  const [destination, setDestination] = useState(null);
+  const [origem, setOrigin] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [atualizaLocalizacao, SetAtualizaLocalizacao] = useState(true);
+  const [destino, SetDestino] = useState({
+    latitude: -22.428974483605884,
+    longitude: -45.448270827152356,
+  });
+
+  const apiKey = 'AIzaSyB4p4ImDh7LXjkDfWAFXGNmlmPqiJIaw-Y';
 
   useEffect(() => {
-    getLocationAsync();
+    async function getLocationAsync() {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permissão de localização negada');
+        setLoading(false);
+        return;
+      }
 
-    setDestination({
-      latitude: -22.906847, // Latitude do Rio de Janeiro
-      longitude: -43.172896, // Longitude do Rio de Janeiro
-    });
-  }, []);
-
-  const getLocationAsync = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      console.log('Permissão de localização negada');
-      return;
+      let location = await Location.getCurrentPositionAsync({});
+      setOrigin({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+      setLoading(false);
     }
 
-    let location = await Location.getCurrentPositionAsync({});
-    setOrigin({
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    });
-  };
+    getLocationAsync();
+
+    const locationUpdateInterval = setInterval(() => {
+      if (atualizaLocalizacao) {
+        getLocationAsync();
+      }
+    }, 8000); 
+
+    return () => clearInterval(locationUpdateInterval);
+  }, [atualizaLocalizacao]);
 
   return (
     <View style={styles.container}>
-      {origin && destination && (
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
         <MapView style={styles.map} initialRegion={{
-          latitude: (origin.latitude + destination.latitude) / 2,
-          longitude: (origin.longitude + destination.longitude) / 2,
-          latitudeDelta: Math.abs(origin.latitude - destination.latitude) + 1.5,
-          longitudeDelta: Math.abs(origin.longitude - destination.longitude) + 1.5,
+          latitude: origem.latitude,
+          longitude: origem.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
         }}>
-          <Marker coordinate={origin} title="Origem" />
-          <Marker coordinate={destination} title="Destino" />
-          <Polyline coordinates={[origin, destination]} strokeWidth={3} strokeColor="#FF0000" />
+          <Marker coordinate={origem} title="Sua localização" />
+          <Marker coordinate={destino} title="Fepi (Destino)" />
+          <MapViewDirections
+            origem={origem}
+            destino={destino}
+            apikey={apiKey}
+            strokeWidth={3}
+            strokeColor="#FF0000"
+          />
         </MapView>
       )}
-      {!origin && <Text>Obtendo localização...</Text>}
-      {!destination && <Text>Configurando destino...</Text>}
     </View>
   );
 }
@@ -53,11 +72,8 @@ export default function Rota() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   map: {
     flex: 1,
-    width: '100%',
   },
 });
