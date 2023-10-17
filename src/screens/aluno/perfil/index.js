@@ -23,7 +23,7 @@ export default function Perfil({ navigation }) {
     const loadUserData = async () => {
       try {
         const id = await AsyncStorage.getItem('idTeste');
-        const response = await axios.get(`http://192.168.31.95:8080/api/usuarios/${id}`);
+        const response = await axios.get(`https://tiresome-wool-production.up.railway.app/api/usuarios/${id}`);
         const user = response.data;
   
         setUserData({
@@ -97,7 +97,7 @@ export default function Perfil({ navigation }) {
       formData.append('matricula', userData.matricula);
 
       const response = await axios.put(
-        `http://192.168.31.95:8080/api/usuarios/${id}`,
+        `https://tiresome-wool-production.up.railway.app/api/usuarios/${id}`,
         formData,
         {
           headers: {

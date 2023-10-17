@@ -37,7 +37,7 @@ export default function Assento({ navigation }) {
         try {
           const authToken = await AsyncStorage.getItem('authToken');
           if (authToken && motoristaId !== null) {
-            const response = await axios.get(`http://192.168.31.95:8080/onibus/contagem/${motoristaId}`, {
+            const response = await axios.get(`https://tiresome-wool-production.up.railway.app/onibus/contagem/${motoristaId}`, {
               headers: {
                 Authorization: `Bearer ${authToken}`,
               },
@@ -78,7 +78,7 @@ export default function Assento({ navigation }) {
           if (motoristaId !== null) {
             const authToken = await AsyncStorage.getItem('authToken');
             if (authToken) {
-              const response = await axios.get(`http://192.168.31.95:8080/api/usuarios/${motoristaId}`, {
+              const response = await axios.get(`https://tiresome-wool-production.up.railway.app/api/usuarios/${motoristaId}`, {
                 headers: {
                   Authorization: `Bearer ${authToken}`,
                 },

@@ -36,7 +36,7 @@ export default function HomeAluno({ navigation }) {
       const usuarioId = await AsyncStorage.getItem("idTeste");
       if (!usuarioId) return;
 
-      const response = await axios.get(`http://192.168.31.95:8080/api/usuarios/${usuarioId}`, {
+      const response = await axios.get(`https://tiresome-wool-production.up.railway.app/api/usuarios/${usuarioId}`, {
         headers,
       });
 

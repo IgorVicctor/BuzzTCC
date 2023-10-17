@@ -22,7 +22,7 @@ export default function Configuracao({navigation}){
 
             AsyncStorage.getItem("idTeste")
                 .then(usuarioId => {
-                axios.get(`http://192.168.31.95:8080/api/usuarios/${usuarioId}`, { headers })
+                axios.get(`https://tiresome-wool-production.up.railway.app/api/usuarios/${usuarioId}`, { headers })
                     .then(response => {
                     if (response.status === 200) {
                         setUsuario(response.data);

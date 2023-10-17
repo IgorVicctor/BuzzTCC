@@ -18,7 +18,7 @@ export default function ListaUsuarios({ navigation }) {
         if (token) {
           setAuthToken(token);
 
-          const response = await axios.get('http://192.168.31.95:8080/api/usuarios/', {
+          const response = await axios.get('https://tiresome-wool-production.up.railway.app/api/usuarios/', {
             headers: {
               Authorization: `Bearer ${token}`,
             },

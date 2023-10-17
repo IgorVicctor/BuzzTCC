@@ -70,7 +70,7 @@ export default function Cadastro({ navigation }) {
 
     // try {
     //   const response = await axios.get(
-    //     `http://192.168.31.95:8080/api/usuarios/checkEmail?email=${userData.email}`
+    //     `https://tiresome-wool-production.up.railway.app/api/usuarios/checkEmail?email=${userData.email}`
     //   );
     //   if (response.data === true) {
     //     Alert.alert("Erro", "Este email já está sendo usado por outro usuário.");
@@ -85,7 +85,7 @@ export default function Cadastro({ navigation }) {
       const userDataWithDiasTransporte = { ...userData, selecionaDias: userData.selecionaDias.split(',').join(',') };
 
       const response = await axios.post(
-        "http://192.168.31.95:8080/api/usuarios/cadastro",
+        "https://tiresome-wool-production.up.railway.app/api/usuarios/cadastro",
         userDataWithDiasTransporte
       );
       console.log("Cadastro bem-sucedido:", response.data);

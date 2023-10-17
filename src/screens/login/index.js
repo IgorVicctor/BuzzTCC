@@ -1,22 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, TextInput, TouchableOpacity, Text, Alert } from "react-native";
-import { style } from "./style";
+import { useFocusEffect } from "@react-navigation/native"; // Importe useFocusEffect
 import BackButtonHandler from "../BackButtonHandler";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
+import { style } from "./style";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // Use o useFocusEffect para redefinir os campos de entrada quando a tela é focada
+  useFocusEffect(
+    React.useCallback(() => {
+      setEmail(""); // Redefine o estado do email
+      setPassword(""); // Redefine o estado da senha
+    }, [])
+  );
+
   const handleLogin = () => {
+    // Restante do seu código
     const data = {
       email: email,
       senha: password,
     };
 
-    axios.post("http://192.168.31.95:8080/auth/login", data, {
+    axios.post("https://tiresome-wool-production.up.railway.app/auth/login", data, {
       headers: {
         "Content-Type": "application/json",
       }
@@ -40,7 +50,7 @@ export default function Login({ navigation }) {
             navigation.navigate("HomeMotorista");
           }
 
-        } else {a
+        } else {
           Alert.alert("Erro", "Este email não está cadastrado. Verifique o email.");
         }
       } else if (response.status === 401) {
@@ -55,7 +65,7 @@ export default function Login({ navigation }) {
         "Email ou senha incorretos. Verifique as credenciais."
       );
     });
-  };
+  }
 
   return (
     <BackButtonHandler navigation={navigation}>

@@ -23,7 +23,7 @@ export default function Configuracao({ navigation }) {
       const usuarioId = await AsyncStorage.getItem("idTeste");
       if (!usuarioId) return;
 
-      const response = await axios.get(`http://192.168.31.95:8080/api/usuarios/${usuarioId}`, { headers });
+      const response = await axios.get(`https://tiresome-wool-production.up.railway.app/api/usuarios/${usuarioId}`, { headers });
 
       if (response.status === 200) {
         setUsuario(response.data);
@@ -81,7 +81,7 @@ export default function Configuracao({ navigation }) {
           </View>
         </View>
         <View style={{ width: '100%', height: '78%', bottom: 0, position: 'absolute' }}>
-          <TouchableOpacity style={styles.option} onPress={toggleDriverText}>
+          {/* <TouchableOpacity style={styles.option} onPress={toggleDriverText}>
             <Text style={styles.optionText}>Motorista</Text>
           </TouchableOpacity>
           {showDriverText && (
@@ -92,7 +92,7 @@ export default function Configuracao({ navigation }) {
           </TouchableOpacity>
           {showVehicleText && (
             <Text style={styles.optionDescription}>Texto específico sobre Veículo</Text>
-          )}
+          )} */}
           <TouchableOpacity style={styles.option} onPress={toggleAboutText}>
             <Text style={styles.optionText}>Sobre</Text>
           </TouchableOpacity>

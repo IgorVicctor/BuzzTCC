@@ -12,6 +12,7 @@ export default function Leitor({ navigation }) {
   const [text, setText] = useState('');
 
   const [usuarioId, setUsuarioId] = useState();
+
   useEffect(() => {
     const getUsuarioId = async () => {
       try {
@@ -34,8 +35,14 @@ export default function Leitor({ navigation }) {
   };
 
   useEffect(() => {
-    askForCameraPermission();
-  }, []);
+    // Solicitar permissão da câmera quando o componente estiver montado e visível na tela.
+    const unsubscribe = navigation.addListener('focus', () => {
+      askForCameraPermission();
+    });
+
+    // Certifique-se de cancelar a inscrição quando o componente for desmontado.
+    return unsubscribe;
+  }, [navigation]);
 
   const handleBarCodeScanned = async ({ data }) => {
     if (scanearCodigo) return; // Stop scanning if the code has been scanned
@@ -45,7 +52,7 @@ export default function Leitor({ navigation }) {
 
     try {
       const response = await axios.post(
-        `http://192.168.31.95:8080/onibus/adicionar-aluno/${data}/${userId}`
+        `https://tiresome-wool-production.up.railway.app/onibus/adicionar-aluno/${data}/${userId}`
       );
       console.log(response.data);
 
@@ -69,12 +76,14 @@ export default function Leitor({ navigation }) {
       <View style={styles.container}>
         <View style={styles.header}></View>
 
-        <View style={styles.barcodebox}>
-          <BarCodeScanner
-            onBarCodeScanned={scanearCodigo ? undefined : handleBarCodeScanned} // Only handle scans if the code has not been scanned
-            style={{ height: 500, width: 530 }}
-          />
-        </View>
+        {hasPermission && (
+          <View style={styles.barcodebox}>
+            <BarCodeScanner
+              onBarCodeScanned={scanearCodigo ? undefined : handleBarCodeScanned} // Only handle scans if the code has not been scanned
+              style={{ height: 500, width: 530 }}
+            />
+          </View>
+        )}
 
         {/* <Text style={styles.maintext}>{text}</Text> */}
 
